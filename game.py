@@ -22,7 +22,7 @@ fundo_lua = pygame.image.load('assets/fundo/Night-Background2.png').convert_alph
 fundo_rochas_voadoras = pygame.image.load('assets/fundo/Night-Background1.png').convert_alpha()
 
 ##importa personagem
-jogador_parado_surfaces = pygame.image.load ('assets/jogador/parado/Hero Boy Idle1').convert_alpha()
+jogador_parado_surfaces = pygame.image.load ('assets/jogador/parado/Hero Boy Idle1.png').convert_alpha()
 jogador_parado_rect = jogador_parado_surfaces.get_rect(midbottom = (100, 530))
 
 #Transforma o tamanho da imagem de fundo
@@ -54,7 +54,7 @@ while True:
             movimento_personagem = 5
 
         if evento.key == pygame.K_LEFT:
-            movimento_personagem = 5
+            movimento_personagem = -5
         
 
     tela.blit(plano_fundo, (0, 0))
