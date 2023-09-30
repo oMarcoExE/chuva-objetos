@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 
-#inicializa o pygame
+#Inicializa o pygame
 pygame.init()
 
 #criar tela
