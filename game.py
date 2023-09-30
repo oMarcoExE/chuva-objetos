@@ -1,6 +1,8 @@
 import pygame
 from sys import exit
+from random import randint, choice
 
+#Função para animação do personagem
 def animacao_perso():
     global jogador_ìndex
     jogador_parado_rect.x += movimento_personagem
@@ -24,6 +26,20 @@ def animacao_perso():
     #Desenha o personagem na tela
     tela.blit(jogador, jogador_parado_rect)
 
+def adicionar_objeto():
+    global objetosPrinc
+
+    posicao = (randint(10, 950), randint (-100, 0))
+    velocidade = randint(5, 10)
+
+    objeto_rect = proj_surface[0].get_rect(center=posicao)
+
+    objetosPrinc.append({
+         'tipo': 'Projetil',
+         'objeto': objeto_rect,
+         'velocidade': velocidade
+    })
+
 #Inicializa o pygame
 pygame.init()
 
@@ -45,6 +61,34 @@ fundo_rochas = pygame.image.load('assets/fundo/Night-Background4.png').convert_a
 fundo_chao = pygame.image.load('assets/fundo/Night-Background3.png').convert_alpha()
 fundo_lua = pygame.image.load('assets/fundo/Night-Background2.png').convert_alpha()
 fundo_rochas_voadoras = pygame.image.load('assets/fundo/Night-Background1.png').convert_alpha()
+
+objetosPrinc = []
+
+#coracao import
+coracao_surface = []
+coracao_index = 0
+
+for imagem in range (1, 4):
+        img = pygame.image.load(f'assets/objetos/coracao/Heart{imagem}.png').convert_alpha()
+        img = pygame.transform.scale(img, (80, 80))
+coracao_surface.append(img)
+
+#moeda import
+moeda_surface = []
+moeda_index = 0
+
+for imagem in range (1, 5):
+        img = pygame.image.load(f'assets\objetos\moeda\Coin-A{imagem}.png').convert_alpha()
+        img = pygame.transform.scale(img, (80, 80))
+moeda_surface.append(img)
+
+#projetil import
+proj_surface = []
+proj_index = 0
+
+for imagem in range (1, 4):
+        img = pygame.image.load(f'assets\objetos\projetil\Hero Bullet{imagem}.png').convert_alpha()
+proj_surface.append(img)
 
 ##Importa o jogador voando
 jogador_voar = []
@@ -76,8 +120,13 @@ fundo_rochas_voadoras = pygame.transform.scale(fundo_rochas_voadoras, tamanho)
 #Cria um relógio para controlar o FPS
 relogio = pygame.time.Clock()
 
+#controla se o personagem esta movimentando
 movimento_personagem = 0
 direcao_perso = 0
+
+new_objeto_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(new_objeto_timer, 500 )
+
 #loop principal do jogo
 while True:
 
@@ -95,8 +144,15 @@ while True:
             if evento.key == pygame.K_LEFT:
                 direcao_perso = 0
                 movimento_personagem = -5
-    else:
-        movimento_personagem = 0
+            
+    if evento.type == pygame.KEYUP:
+        if evento.key == pygame.K_RIGHT:
+            movimento_personagem = 0
+        if evento.key == pygame.K_LEFT:
+            movimento_personagem = 0
+
+    if evento.type == new_objeto_timer:
+        adicionar_objeto()
 
 
     tela.blit(plano_fundo, (0, 0))
@@ -107,9 +163,8 @@ while True:
     tela.blit(fundo_chao, (0, 0))
     tela.blit(fundo_lua, (0, 0))
     tela.blit(fundo_rochas_voadoras, (0, 0))
-
-    #Calcula o movimento do personagem
     
+    #Chama a função para animar
     animacao_perso()
 
     #Atualiza a tela do conteudo
