@@ -29,17 +29,41 @@ def animacao_perso():
 def adicionar_objeto():
     global objetosPrinc
 
-    posicao = (randint(10, 950), randint (-100, 0))
+    objetos_lista_aleatorio = ['Coração'] * 10 + ['Moeda'] * 10 + ['Projetil'] * 80
+    tipo_objeto = choice(objetos_lista_aleatorio)
+
+    posicao = (randint(-10, 950), randint (-100, 0))
     velocidade = randint(5, 10)
 
-    objeto_rect = proj_surface[0].get_rect(center=posicao)
+    if tipo_objeto == 'Projetil':
+        objeto_rect = proj_surface[0].get_rect(center=posicao)
+    elif tipo_objeto == 'Coração':
+         objeto_rect = coracao_surface[0].get_rect(center=posicao)
+    elif tipo_objeto == 'Moeda':
+         objeto_rect = moeda_surface[0].get_rect(center=posicao)
 
     objetosPrinc.append({
-         'tipo': 'Projetil',
+         'tipo': tipo_objeto,
          'objeto': objeto_rect,
          'velocidade': velocidade
     })
 
+def movimento_objetos():
+    global objetosPrinc
+
+    for objeto in objetosPrinc:
+        objeto['objeto'].y += objeto['velocidade']
+        
+
+        if objeto['tipo'] == 'Projetil':
+            tela.blit(proj_surface[proj_index], objeto['objeto'])
+        elif objeto['tipo'] == 'Coração':
+            tela.blit(coracao_surface[coracao_index], objeto['objeto'])
+        elif objeto['tipo'] == 'Moeda':
+            tela.blit(moeda_surface[moeda_index], objeto['objeto'])
+
+        if objeto['objeto'].y > 540:
+             objetosPrinc.remove(objeto)
 #Inicializa o pygame
 pygame.init()
 
@@ -62,7 +86,6 @@ fundo_chao = pygame.image.load('assets/fundo/Night-Background3.png').convert_alp
 fundo_lua = pygame.image.load('assets/fundo/Night-Background2.png').convert_alpha()
 fundo_rochas_voadoras = pygame.image.load('assets/fundo/Night-Background1.png').convert_alpha()
 
-objetosPrinc = []
 
 #coracao import
 coracao_surface = []
@@ -127,6 +150,7 @@ direcao_perso = 0
 new_objeto_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(new_objeto_timer, 500 )
 
+objetosPrinc = []
 #loop principal do jogo
 while True:
 
@@ -163,10 +187,11 @@ while True:
     tela.blit(fundo_chao, (0, 0))
     tela.blit(fundo_lua, (0, 0))
     tela.blit(fundo_rochas_voadoras, (0, 0))
-    
+
     #Chama a função para animar
     animacao_perso()
-
+    movimento_objetos()
+    
     #Atualiza a tela do conteudo
     pygame.display.update()
 
