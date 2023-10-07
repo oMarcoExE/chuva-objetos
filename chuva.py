@@ -1,33 +1,138 @@
 import pygame
 from sys import exit
+from random import randint, choice
 
-# Inicializa o pygame
+#Função para animação do personagem
+def animacao_perso():
+    global jogador_ìndex
+    jogador_parado_rect.x += movimento_personagem
+
+    #Voando
+    if movimento_personagem == 0:
+        jogador_surface = jogador_parado_surfaces
+    else: 
+        jogador_surface = jogador_voar
+
+    #Passa de imagem para realiza a Animação
+    jogador_ìndex += 0.11
+    if jogador_ìndex > len(jogador_surface) -1:
+        jogador_ìndex = 0
+
+    if direcao_perso == 1:
+        jogador = pygame.transform.flip(jogador_surface[int(jogador_ìndex)], True, False)
+    else:
+        jogador = jogador_surface[int(jogador_ìndex)]
+
+    #Desenha o personagem na tela
+    tela.blit(jogador, jogador_parado_rect)
+
+def adicionar_objeto():
+    print("Eu passei na adicionar_objeto")
+    print(pygame.time.get_ticks)
+    global objetosPrinc
+
+    objetos_lista_aleatorio = ['Coração'] * 10 + ['Moeda'] * 10 + ['Projetil'] * 80
+    tipo_objeto = choice(objetos_lista_aleatorio)
+
+    posicao = (randint(-10, 950), randint (-100, 0))
+    velocidade = randint(5, 10)
+
+    if tipo_objeto == 'Projetil':
+        objeto_rect = proj_surface[0].get_rect(center=posicao)
+    elif tipo_objeto == 'Coração':
+         objeto_rect = coracao_surface[0].get_rect(center=posicao)
+    elif tipo_objeto == 'Moeda':
+         objeto_rect = moeda_surface[0].get_rect(center=posicao)
+
+    objetosPrinc.append({
+         'tipo': tipo_objeto,
+         'objeto': objeto_rect,
+         'velocidade': velocidade
+    })
+
+def movimento_objetos():
+    global objetosPrinc
+
+    for objeto in objetosPrinc:
+        objeto['objeto'].y += objeto['velocidade']
+        
+
+        if objeto['tipo'] == 'Projetil':
+            tela.blit(proj_surface[proj_index], objeto['objeto'])
+        elif objeto['tipo'] == 'Coração':
+            tela.blit(coracao_surface[coracao_index], objeto['objeto'])
+        elif objeto['tipo'] == 'Moeda':
+            tela.blit(moeda_surface[moeda_index], objeto['objeto'])
+
+        if objeto['objeto'].y > 540:
+             objetosPrinc.remove(objeto)
+#Inicializa o pygame
 pygame.init()
 
-# Cria a tela
+#criar tela
 tamanho = (960, 540)
 tela = pygame.display.set_mode(tamanho)
 
-# Define o título da janela
-pygame.display.set_caption('ChuvaMortal')
+#Defini o Titulo da Janela
+pygame.display.set_caption("Cara que anda")
 
-# Cria o relógio para controlar o FPS
-relogio = pygame.time.Clock()
+##
+## Importar arquivos necessários
+##
+plano_fundo = pygame.image.load('assets/fundo/Night-Background8.png').convert_alpha()
+fundo_estrelas = pygame.image.load('assets/fundo/Night-Background7.png').convert_alpha()
+fundo_estrelas_2 = pygame.image.load('assets/fundo/Night-Background6.png').convert_alpha()
+fundo_estrelas_3 = pygame.image.load('assets/fundo/Night-Background5.png').convert_alpha()
+fundo_rochas = pygame.image.load('assets/fundo/Night-Background4.png').convert_alpha()
+fundo_chao = pygame.image.load('assets/fundo/Night-Background3.png').convert_alpha()
+fundo_lua = pygame.image.load('assets/fundo/Night-Background2.png').convert_alpha()
+fundo_rochas_voadoras = pygame.image.load('assets/fundo/Night-Background1.png').convert_alpha()
 
-# Carrega os arquivos necessários para o jogo
-fonte_pixel = pygame.font.Font('assets/font/Pixeltype.ttf', 50)
 
-## Carrega as imagens de fundo
-plano_fundo = pygame.image.load('assets/fundo/Night-Background8.png').convert()
-fundo_estrelas = pygame.image.load('assets/fundo/Night-Background7.png').convert()
-fundo_estrelas_2 = pygame.image.load('assets/fundo/Night-Background6.png').convert()
-fundo_estrelas_3 = pygame.image.load('assets/fundo/Night-Background5.png').convert()
-fundo_rochas = pygame.image.load('assets/fundo/Night-Background4.png').convert()
-fundo_chao = pygame.image.load('assets/fundo/Night-Background3.png').convert()
-fundo_lua = pygame.image.load('assets/fundo/Night-Background2.png').convert()
-fundo_rochas_voadoras = pygame.image.load('assets/fundo/Night-Background1.png').convert()
+#coracao import
+coracao_surface = []
+coracao_index = 0
 
-# Transforma as imagens de fundo para o tamanho da tela
+for imagem in range (1, 4):
+        img = pygame.image.load(f'assets/objetos/coracao/Heart{imagem}.png').convert_alpha()
+        img = pygame.transform.scale(img, (80, 80))
+coracao_surface.append(img)
+
+#moeda import
+moeda_surface = []
+moeda_index = 0
+
+for imagem in range (1, 5):
+        img = pygame.image.load(f'assets\objetos\moeda\Coin-A{imagem}.png').convert_alpha()
+        img = pygame.transform.scale(img, (80, 80))
+moeda_surface.append(img)
+
+#projetil import
+proj_surface = []
+proj_index = 0
+
+for imagem in range (1, 4):
+        img = pygame.image.load(f'assets\objetos\projetil\Hero Bullet{imagem}.png').convert_alpha()
+proj_surface.append(img)
+
+##Importa o jogador voando
+jogador_voar = []
+
+for imagem in range(1, 9):
+    img = pygame.image.load(f'assets/jogador/voar/Hero Boy Fly{imagem}.png')
+    jogador_voar.append(img)
+
+##importa personagem
+jogador_ìndex = 0
+jogador_parado_surfaces = []
+
+for imagem in range(1, 14):
+    img = pygame.image.load(f'assets/jogador/parado/Hero Boy Idle{imagem}.png')
+    jogador_parado_surfaces.append(img)
+
+jogador_parado_rect = jogador_parado_surfaces[jogador_ìndex].get_rect(midbottom = (100, 530))
+
+#Transforma o tamanho da imagem de fundo
 plano_fundo = pygame.transform.scale(plano_fundo, tamanho)
 fundo_estrelas = pygame.transform.scale(fundo_estrelas, tamanho)
 fundo_estrelas_2 = pygame.transform.scale(fundo_estrelas_2, tamanho)
@@ -37,60 +142,43 @@ fundo_chao = pygame.transform.scale(fundo_chao, tamanho)
 fundo_lua = pygame.transform.scale(fundo_lua, tamanho)
 fundo_rochas_voadoras = pygame.transform.scale(fundo_rochas_voadoras, tamanho)
 
-## Carrega as imagens do jogador para dentro de uma lista
-jogador_parado_surfaces = []
-for imagem in range(1, 14):
-    img = pygame.image.load(f'assets/jogador/parado/Hero Boy Idle{imagem}.png').convert_alpha()
-    jogador_parado_surfaces.append(img)
+#Cria um relógio para controlar o FPS
+relogio = pygame.time.Clock()
 
-# Define um index para qual imagem será usada
-jogador_index = 0
+#controla se o personagem esta movimentando
+movimento_personagem = 0
+direcao_perso = 0
 
-# Define um retângulo para posicionar a imagem do jogador
-jogador_parado_retangle = jogador_parado_surfaces[jogador_index].get_rect(center=(100, 430))
+new_objeto_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(new_objeto_timer, 500)
 
-# Define a velocidade de movimento do jogador
-movimento_jogador = 0
-
-# Define a direção que o jogador está indo
-direcao_jogador = 0
-
-# Laço principal do jogo
+objetosPrinc = []
+#loop principal do jogo
 while True:
 
-    # Le os eventos do jogo
     for evento in pygame.event.get():
-
-        # Verifica se o jogador quer sair
         if evento.type == pygame.QUIT:
             pygame.quit()
             exit()
 
-        # Verifica se o jogador pressionou alguma tecla
-        if evento.type == pygame.KEYDOWN:
+    if evento.type == pygame.KEYDOWN:
+        if evento.key == pygame.K_RIGHT:
+            direcao_perso = 1
+            movimento_personagem = 5
 
-            # Verifica se o jogador pressionou a seta para direita
-            if evento.key == pygame.K_RIGHT:
-                movimento_jogador = 5
-                direcao_jogador = 1
+        if evento.key == pygame.K_LEFT:
+            direcao_perso = 0
+            movimento_personagem = -5
+            
+    if evento.type == pygame.KEYUP:
+        if evento.key == pygame.K_RIGHT:
+            movimento_personagem = 0
+        if evento.key == pygame.K_LEFT:
+            movimento_personagem = 0
 
-            # Verifica se o jogador pressionou a seta para esquerda
-            if evento.key == pygame.K_LEFT:
-                movimento_jogador = -5
-                direcao_jogador = -1
+    if evento.type == new_objeto_timer:
+        adicionar_objeto()
 
-        # Verifica se o jogador soltou alguma tecla
-        if evento.type == pygame.KEYUP:
-                
-                # Verifica se o jogador soltou a seta para direita
-                if evento.key == pygame.K_RIGHT:
-                    movimento_jogador = 0
-    
-                # Verifica se o jogador soltou a seta para esquerda
-                if evento.key == pygame.K_LEFT:
-                    movimento_jogador = 0
-
-    # Desenha o fundo do jogo
     tela.blit(plano_fundo, (0, 0))
     tela.blit(fundo_estrelas, (0, 0))
     tela.blit(fundo_estrelas_2, (0, 0))
@@ -100,32 +188,12 @@ while True:
     tela.blit(fundo_lua, (0, 0))
     tela.blit(fundo_rochas_voadoras, (0, 0))
 
-    # Desenha e atualiza a imagem do jogador
-    if jogador_index >= 12:
-        jogador_index = 0
+    #Chama a função para animar
+    animacao_perso()
+    movimento_objetos()
     
-    jogador_index += 0.11
-
-    # Movimenta o jogador
-    jogador_parado_retangle.x += movimento_jogador
-
-    # Impede que o jogador saia da tela
-    if jogador_parado_retangle.left <= -30:
-        jogador_parado_retangle.left = -30
-    elif jogador_parado_retangle.right >= 1000:
-        jogador_parado_retangle.right = 1000
-
-    # Vira o jogador para a direção que ele está indo
-    if direcao_jogador == 1:
-        jogador = pygame.transform.flip(jogador_parado_surfaces[int(jogador_index)], True, False)
-    else:
-        jogador = jogador_parado_surfaces[int(jogador_index)]
-
-    # Desenha o jogador na tela
-    tela.blit(jogador, jogador_parado_retangle)
-
-    # Atualiza a tela
+    #Atualiza a tela do conteudo
     pygame.display.update()
 
-    # Define o FPS (quantas vezes o loop será executado por segundo)
+    #Defini a quantidade de frames por segundo
     relogio.tick(60)
