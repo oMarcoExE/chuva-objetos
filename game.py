@@ -2,6 +2,26 @@ import pygame
 from sys import exit
 from random import randint, choice
 
+
+def colisoes_jogador():
+
+    global coracao, moeda
+
+    for objeto in lista_chuva_objetos:
+        if jogador_retangulo.colliderect(objeto['retangulo']):
+            if objeto['tipo'] == 'Projetil':
+                coracao -= 1
+
+            if objeto['tipo'] == 'Moeda':
+                moeda += 1
+
+            if objeto['tipo'] == 'Coração':
+                coracao += 1
+
+            lista_chuva_objetos.remove(objeto)
+
+    print(f'Coracao: {coracao} Moeda: {moeda}')
+
 def animacao_rochas():
     global movimento_rochas
 
@@ -183,6 +203,9 @@ direcao_personagem = 0
 novo_objeto_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(novo_objeto_timer, 500)
 
+coracao = 3
+moeda = 0
+
 # Loop principal do jogo
 while True:
     # EVENTOS
@@ -225,6 +248,8 @@ while True:
     animacao_personagem()
 
     movimento_objetos_chuva()
+
+    colisoes_jogador()
 
     # Atualiza a tela com o conteudo
     pygame.display.update()
