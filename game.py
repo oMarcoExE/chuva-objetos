@@ -111,6 +111,11 @@ def movimento_objetos_chuva():
         if objeto['retangulo'].y > 540:
             lista_chuva_objetos.remove(objeto)
 
+def mostra_texto():
+    texto_moedas = fonte_pixel.render('Moedas', True, '#FFFFFF')
+
+    tela.blit(texto_moedas, (0, 0))
+
 # Inicializa o pygame
 pygame.init()
 
@@ -124,6 +129,9 @@ pygame.display.set_caption("ChuvaMortal")
 ##
 ## Importa os arquivos necessários
 ##
+
+#Carrega a fonte do jogo
+fonte_pixel = pygame.font.Font('assets/font/PixelType.ttf', 50)
 
 # Carrega o plano de fundo
 plano_fundo = pygame.image.load('assets/fundo/Night-Background8.png').convert()
@@ -250,6 +258,8 @@ while True:
     movimento_objetos_chuva()
 
     colisoes_jogador()
+
+    mostra_texto()
 
     # Atualiza a tela com o conteudo
     pygame.display.update()
