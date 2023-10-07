@@ -3,6 +3,24 @@ from sys import exit
 from random import randint, choice
 
 #Função para animação do personagem
+
+def colisoes_jogador():
+
+    global moeda, coracao
+
+    for objeto in objetosPrinc:
+        if jogador_parado_rect.colliderect(objeto['objeto']):
+            if objeto['tipo'] == 'Projetil':
+                coracao -= 1
+
+            if objeto['tipo'] == 'Moeda':
+                moeda += 1
+
+            if objeto['tipo'] == 'Coração':
+                coracao += 1
+
+            objetosPrinc.remove(objeto)
+
 def animacao_perso():
     global jogador_ìndex
     jogador_parado_rect.x += movimento_personagem
@@ -27,8 +45,6 @@ def animacao_perso():
     tela.blit(jogador, jogador_parado_rect)
 
 def adicionar_objeto():
-    print("Eu passei na adicionar_objeto")
-    print(pygame.time.get_ticks)
     global objetosPrinc
 
     objetos_lista_aleatorio = ['Coração'] * 10 + ['Moeda'] * 10 + ['Projetil'] * 80
@@ -94,8 +110,8 @@ coracao_surface = []
 coracao_index = 0
 
 for imagem in range (1, 4):
-        img = pygame.image.load(f'assets/objetos/coracao/Heart{imagem}.png').convert_alpha()
-        img = pygame.transform.scale(img, (80, 80))
+    img = pygame.image.load(f'assets/objetos/coracao/Heart{imagem}.png').convert_alpha()
+    img = pygame.transform.scale(img, (80, 80))
 coracao_surface.append(img)
 
 #moeda import
@@ -103,8 +119,8 @@ moeda_surface = []
 moeda_index = 0
 
 for imagem in range (1, 5):
-        img = pygame.image.load(f'assets\objetos\moeda\Coin-A{imagem}.png').convert_alpha()
-        img = pygame.transform.scale(img, (80, 80))
+    img = pygame.image.load(f'assets\objetos\moeda\Coin-A{imagem}.png').convert_alpha()
+    img = pygame.transform.scale(img, (80, 80))
 moeda_surface.append(img)
 
 #projetil import
@@ -112,7 +128,7 @@ proj_surface = []
 proj_index = 0
 
 for imagem in range (1, 4):
-        img = pygame.image.load(f'assets\objetos\projetil\Hero Bullet{imagem}.png').convert_alpha()
+    img = pygame.image.load(f'assets\objetos\projetil\Hero Bullet{imagem}.png').convert_alpha()
 proj_surface.append(img)
 
 ##Importa o jogador voando
@@ -154,7 +170,13 @@ pygame.time.set_timer(new_objeto_timer, 500)
 
 objetosPrinc = []
 #loop principal do jogo
-while True:
+
+jogo_ativo = True
+
+coracao = 3
+moeda = 0
+
+while jogo_ativo:
 
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
@@ -169,6 +191,9 @@ while True:
         if evento.key == pygame.K_LEFT:
             direcao_perso = 0
             movimento_personagem = -5
+
+        if evento.key == pygame.K_ESCAPE:
+            jogo_ativo = False
             
     if evento.type == pygame.KEYUP:
         if evento.key == pygame.K_RIGHT:
@@ -191,6 +216,7 @@ while True:
     #Chama a função para animar
     animacao_perso()
     movimento_objetos()
+    colisoes_jogador()
     
     #Atualiza a tela do conteudo
     pygame.display.update()
