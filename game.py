@@ -20,8 +20,6 @@ def colisoes_jogador():
 
             lista_chuva_objetos.remove(objeto)
 
-    print(f'Coracao: {coracao} Moeda: {moeda}')
-
 def animacao_rochas():
     global movimento_rochas
 
@@ -52,6 +50,12 @@ def animacao_personagem():
     global jogador_index
     # Calcula o movimento do personagem
     jogador_retangulo.x += movimento_personagem
+
+    if jogador_retangulo.right >= 960:
+        jogador_retangulo.right = 960
+    elif jogador_retangulo.left <= 0:
+        jogador_retangulo.left = 0
+
     # jogador_surface = null
 
     if movimento_personagem == 0: # Jogador está parado
@@ -112,9 +116,19 @@ def movimento_objetos_chuva():
             lista_chuva_objetos.remove(objeto)
 
 def mostra_texto():
-    texto_moedas = fonte_pixel.render('Moedas', True, '#FFFFFF')
+    texto_moedas = fonte_pixel.render(f'Moedas: {moeda}', True, '#FFFFFF')
+    texto_vida = fonte_pixel.render(f'Vida: {coracao}', True, '#FFFFFF')
 
-    tela.blit(texto_moedas, (0, 0))
+    tela.blit(texto_moedas, (50, 18))
+    tela.blit(texto_vida, (51, 52))
+
+    moedaVisu = pygame.image.load(f'assets/objetos/moeda/Coin-A1.png').convert_alpha()
+    moedaVisu = pygame.transform.scale(moedaVisu, (35, 35))
+    tela.blit(moedaVisu, (6, 10))
+
+    coracaoVisu = pygame.image.load(f'assets/objetos/coracao/Heart1.png').convert_alpha()
+    coracaoVisu = pygame.transform.scale(coracaoVisu, (45, 45))
+    tela.blit(coracaoVisu, (0, 40))
 
 # Inicializa o pygame
 pygame.init()
@@ -224,12 +238,15 @@ while True:
 
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_RIGHT:
-                movimento_personagem = 5
+                movimento_personagem = 10
                 direcao_personagem = 1
 
             if evento.key == pygame.K_LEFT:
-                movimento_personagem = -5
+                movimento_personagem = -10
                 direcao_personagem = 0
+
+            if evento.key == pygame.K_ESCAPE:
+                exit()
 
         if evento.type == pygame.KEYUP:
             if evento.key == pygame.K_RIGHT:
